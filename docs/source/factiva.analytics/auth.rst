@@ -1,11 +1,18 @@
-core.auth
-#########
-Factiva authentication modules and classes
+Authentication Service
+######################
+Module part of the core componenets for the Factiva Analytics python package.
+Contains classes and tools that allow to interact with the authentication and
+authorization elements of the Factiva Analytics API.
 
-userKey class
-*************
+UserKey
+-------
 
-.. automodule:: factiva.core.auth
+.. autoclass:: factiva.analytics.auth.userkey.UserKey
    :members:
-   :undoc-members:
-   :show-inheritance:
+   :member-order: groupwise
+
+OAuthUser
+---------
+
+.. autoclass:: factiva.analytics.auth.oauthuser.OAuthUser
+   :members:

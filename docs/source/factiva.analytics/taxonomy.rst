@@ -1,18 +1,19 @@
-news.taxonomy
+Taxonomy Service
 ################
+Module that handles all Factiva Analytics Taxonomies objects within the package.
+Contains classes and tools that allow to interact with the taxonomies and
+company identifier endpoints of the Factiva Analytics API.
 
-Taxonomy
---------
+FactivaTaxonomyCategory
+***********************
 
-.. autoclass:: factiva.news.taxonomy.Taxonomy
+.. autoclass:: factiva.analytics.taxonomy.factiva_taxonomies.FactivaTaxonomyCategories
    :members:
-   :undoc-members:
-   :show-inheritance:
 
-Company
---------
 
-.. autoclass:: factiva.news.taxonomy.Company
+FactivaTaxonomy
+***************
+
+.. autoclass:: factiva.analytics.taxonomy.factiva_taxonomies.FactivaTaxonomy
    :members:
-   :undoc-members:
-   :show-inheritance:
+
