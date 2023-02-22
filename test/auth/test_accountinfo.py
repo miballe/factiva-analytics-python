@@ -5,6 +5,7 @@ import pytest
 from factiva.analytics import AccountInfo
 from factiva.analytics.common import config
 
+GITHUB_CI = config.load_environment_value('CI', False)
 FACTIVA_USERKEY = config.load_environment_value("FACTIVA_USERKEY")
 DUMMY_KEY = 'abcd1234abcd1234abcd1234abcd1234'
 
@@ -119,6 +120,8 @@ def test_userkey_with_stats():
     """"
     Creates the object using the ENV variable and request the usage details to the API service
     """
+    if GITHUB_CI:
+        pytest.skip("Not to be tested in GitHub Actions")
     usr = AccountInfo()
     _test_userkey_types(usr)
     _test_userkey_values(usr)
@@ -128,6 +131,8 @@ def test_user_with_parameter_and_stats():
     """
     API Key is passed as a string
     """
+    if GITHUB_CI:
+        pytest.skip("Not to be tested in GitHub Actions")
     usr = AccountInfo(FACTIVA_USERKEY)
     _test_userkey_types(usr)
     _test_userkey_values(usr)
