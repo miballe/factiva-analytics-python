@@ -3,7 +3,7 @@
 """
 __all__ = [
     'ArticleRetrieval', 'UIArticle',
-    'UserKey', 'OAuthUser',
+    'UserKey', 'OAuthUser', 'AccountInfo',
     'FactivaTaxonomy', 'FactivaTaxonomyCategories',
     'SnapshotExplain', 'SnapshotExplainQuery', 'SnapshotExplainJobResponse', 'SnapshotExplainSamplesResponse',
     'SnapshotTimeSeries', 'SnapshotTimeSeriesQuery', 'SnapshotTimeSeriesJobReponse',
@@ -13,7 +13,7 @@ __all__ = [
 
 from .__version__ import __version__
 from .article_retrieval import ArticleRetrieval, UIArticle
-from .auth import UserKey, OAuthUser
+from .auth import UserKey, OAuthUser, AccountInfo
 from .taxonomy import FactivaTaxonomy, FactivaTaxonomyCategories
 from .snapshots import SnapshotExplain, SnapshotExplainQuery, SnapshotExplainJobResponse, SnapshotExplainSamplesResponse
 from .snapshots import SnapshotTimeSeries, SnapshotTimeSeriesQuery, SnapshotTimeSeriesJobReponse
