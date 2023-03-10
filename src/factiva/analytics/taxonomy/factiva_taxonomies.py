@@ -138,7 +138,7 @@ class FactivaTaxonomy():
             from factiva.analytics import FactivaTaxonomy, FactivaTaxonomyCategories
             t = FactivaTaxonomy()
             industry_codes = t.get_category_codes(FactivaTaxonomyCategories.INDUSTRIES)
-            industry_codes
+            print(industry_codes)
 
         .. code-block::
 

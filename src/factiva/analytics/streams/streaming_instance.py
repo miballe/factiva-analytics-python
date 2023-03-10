@@ -35,7 +35,7 @@ class StreamingSubscription():
 
     def __str__(self, table=False, prefix='  ├─', root_prefix=''):
         if not table:
-            ret_val = f"{root_prefix}<factiva.analytics.{str(self.__class__).split('.')[-1]}"
+            ret_val = f"{root_prefix}<'factiva.analytics.{str(self.__class__).split('.')[-1]}"
             ret_val += f'{prefix}short_id: {self.short_id}'
         else:
             ret_val = f"{prefix}{self.short_id:>8}"
@@ -99,7 +99,7 @@ class StreamingQuery(SnapshotBaseQuery):
 
 
     def __str__(self, detailed=True, prefix='  ├─', root_prefix=''):
-        ret_val = f"{root_prefix}<factiva.analytics.{str(self.__class__).split('.')[-1]}\n"
+        ret_val = f"{root_prefix}<'factiva.analytics.{str(self.__class__).split('.')[-1]}\n"
         ret_val += f'{prefix}where: '
         ret_val += (self.where[:77] + '...') if len(self.where) > 80 else self.where
         # if detailed:
@@ -280,7 +280,7 @@ class StreamingInstance():
 
 
     def __str__(self, detailed=True, prefix='  ├─', root_prefix=''):
-        ret_val = f"{root_prefix}<factiva.analytics.{str(self.__class__).split('.')[-1]}"
+        ret_val = f"{root_prefix}<'factiva.analytics.{str(self.__class__).split('.')[-1]}"
         if self.id:
             ret_val += f"\n{prefix}id: <Hidden>"
             ret_val += f"\n{prefix}short_id: {tools.print_property(self.short_id)}"

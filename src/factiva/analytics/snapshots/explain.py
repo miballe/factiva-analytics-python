@@ -220,7 +220,7 @@ class SnapshotExplain(SnapshotBase): # TODO: Refactor when repeating code across
             Explain Job ID with a format like ``abcd1234-ab12-ab12-ab12-abcdef123456``.
             Not compatible if the parameter ``query``.
         """
-        super().__init__(user_key=user_key, query=query, job_id=job_id)
+        super().__init__(job_id=job_id, query=query, user_key=user_key)
         self.__log = log.get_factiva_logger()
         self.__JOB_BASE_URL = f'{const.API_HOST}{const.API_SNAPSHOTS_BASEPATH}'
 
