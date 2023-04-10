@@ -86,7 +86,8 @@ class UserKey:
         except TypeError as type_error:
             raise ValueError('Unable to get a cloud token for the given key. This account might have limited access.') from type_error
 
-        self.cloud_token = json.loads(streaming_credentials_string)
+        if streaming_credentials_string is not None:
+                self.cloud_token = json.loads(streaming_credentials_string)
         self.__log.info('get_cloud_token ended')
         return True
 

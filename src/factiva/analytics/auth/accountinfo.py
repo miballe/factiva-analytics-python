@@ -6,8 +6,8 @@ import json
 import pandas as pd
 from ..common import log, req, tools, const, config
 from ..auth import UserKey
-from ..snapshots import SnapshotExtraction
-from ..streams import StreamingInstance
+from ..snapshots import SnapshotExtractionList
+from ..streams import StreamingInstanceList
 
 class AccountInfo:
     """
@@ -33,8 +33,8 @@ class AccountInfo:
     total_stream_instances: int = None
     total_stream_subscriptions: int = None
     enabled_company_identifiers: list = None
-    streams: list[StreamingInstance] = None  # TODO: Assign this value
-    extractions: list[SnapshotExtraction] = None  # TODO: Assign this value
+    streams: StreamingInstanceList = None
+    extractions: SnapshotExtractionList = None
 
 
     def __init__(self, user_key: UserKey or str=None):
@@ -87,6 +87,8 @@ class AccountInfo:
         self.__log = log.get_factiva_logger()
         self.user_key = UserKey(user_key)
         self.get_stats()
+        self.get_extractions()
+        self.get_streams(running=False)
 
 
     @property
@@ -107,16 +109,6 @@ class AccountInfo:
         if self.max_allowed_extracted_documents:
             return self.max_allowed_extracted_documents - self.total_extracted_documents
         return None
-
-    # @property
-    # def extractions_done(self):
-    #     """Number of executed extractions"""
-    #     return self.get_extractions()
-
-    # @property
-    # def streams_running(self):
-    #     """Number of currently running Streaming Instances"""
-    #     return self.get_streams()
 
 
     @log.factiva_logger()
@@ -164,7 +156,7 @@ class AccountInfo:
 
 
     @log.factiva_logger()
-    def get_extractions(self, updates=False) -> pd.DataFrame:   # TODO: Change return type
+    def get_extractions(self, updates=False) -> SnapshotExtractionList:
         """
         Request a list of historical extractions for the account.
 
@@ -194,28 +186,31 @@ class AccountInfo:
             raise RuntimeError(f'Unexpected API Error with message: {response.text}')
 
         response_data = response.json()
-
-        extraction_df = pd.DataFrame([tools.flatten_dict(extraction) for extraction in response_data['data']])
-        extraction_df.rename(columns={'id': 'object_id'}, inplace=True)
-        ids_df = extraction_df['object_id'].str.split('-', expand=True)
-
-        if ids_df.shape[1] >= 5:
-            extraction_df['snapshot_sid'] = ids_df[4]
+        if response_data['data'] == []:
+            extraction_df = pd.DataFrame()
         else:
-            extraction_df['snapshot_sid'] = None
+            extraction_df = pd.DataFrame([tools.flatten_dict(extraction) for extraction in response_data['data']])
+            extraction_df.rename(columns={'id': 'object_id'}, inplace=True)
+            ids_df = extraction_df['object_id'].str.split('-', expand=True)
 
-        if ids_df.shape[1] >= 7:
-            extraction_df['update_id'] = ids_df[6]
-        else:
-            extraction_df['update_id'] = None
+            if ids_df.shape[1] >= 5:
+                extraction_df['short_id'] = ids_df[4]
+            else:
+                extraction_df['short_id'] = None
 
-        extraction_df.drop(['self', 'type'], axis=1, inplace=True)
+            if ids_df.shape[1] >= 7:
+                extraction_df['update_id'] = ids_df[6]
+            else:
+                extraction_df['update_id'] = None
 
-        if not updates:
-            extraction_df = extraction_df.loc[extraction_df.update_id.isnull()]
+            extraction_df.drop(['self', 'type'], axis=1, inplace=True)
 
+            if not updates:
+                extraction_df = extraction_df.loc[extraction_df.update_id.isnull()]
+
+        self.extractions = SnapshotExtractionList(extraction_df)
         self.__log.info('get_extractions ended')
-        return extraction_df
+        return self.extractions
 
 
     @log.factiva_logger()
@@ -255,9 +250,9 @@ class AccountInfo:
 
                 response_data = response.json()
                 stream_df = pd.DataFrame([tools.flatten_dict(extraction) for extraction in response_data['data']])
-                stream_df.rename(columns={'id': 'object_id'}, inplace=True)
-                ids_df = stream_df['object_id'].str.split('-', expand=True)
-                stream_df['stream_id'] = ids_df[4]
+                stream_df.rename(columns={'id': 'stream_id'}, inplace=True)
+                ids_df = stream_df['stream_id'].str.split('-', expand=True)
+                stream_df['short_id'] = ids_df[4]
                 stream_df['stream_type'] = ids_df[2]
                 stream_df['subscriptions'] = stream_df['data'].apply(extract_subscriptions)
                 stream_df['n_subscriptions'] = stream_df['subscriptions'].str.len()
@@ -265,15 +260,18 @@ class AccountInfo:
 
                 if running:
                     stream_df = stream_df.loc[stream_df.job_status == const.API_JOB_RUNNING_STATE]
-
-                self.__log.info('get_streams ended')
-                return stream_df
             except Exception as error:
                 raise AttributeError('Unexpected Get Streams API Response.') from error
+        elif response.status_code == 404:
+            stream_df = pd.DataFrame()
         elif response.status_code == 403:
             raise ValueError('Factiva API-Key does not exist or inactive.')
         else:
             raise RuntimeError('Unexpected Get Streams API Error')
+        
+        self.streams = StreamingInstanceList(stream_df)
+        self.__log.info('get_streams ended')
+        return stream_df
 
 
     def is_active(self) -> bool:

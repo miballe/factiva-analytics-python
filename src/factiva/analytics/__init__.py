@@ -8,7 +8,9 @@ __all__ = [
     'SnapshotExplain', 'SnapshotExplainQuery', 'SnapshotExplainJobResponse', 'SnapshotExplainSamplesResponse',
     'SnapshotTimeSeries', 'SnapshotTimeSeriesQuery', 'SnapshotTimeSeriesJobReponse',
     'SnapshotExtraction', 'SnapshotExtractionQuery', 'SnapshotExtractionJobReponse',
-    'StreamingInstance', 'StreamingQuery', 'StreamingSubscription'
+    'SnapshotExtractionList', 'SnapshotExtractionListItem',
+    'StreamingInstance', 'StreamingQuery', 'StreamingSubscription',
+    'StreamingInstanceList', 'StreamingInstanceListItem'
 ]
 
 from .__version__ import __version__
@@ -17,8 +19,8 @@ from .auth import UserKey, OAuthUser, AccountInfo
 from .taxonomy import FactivaTaxonomy, FactivaTaxonomyCategories
 from .snapshots import SnapshotExplain, SnapshotExplainQuery, SnapshotExplainJobResponse, SnapshotExplainSamplesResponse
 from .snapshots import SnapshotTimeSeries, SnapshotTimeSeriesQuery, SnapshotTimeSeriesJobReponse
-from .snapshots import SnapshotExtraction, SnapshotExtractionQuery, SnapshotExtractionJobReponse
-from .streams import StreamingInstance, StreamingQuery, StreamingSubscription
+from .snapshots import SnapshotExtraction, SnapshotExtractionQuery, SnapshotExtractionJobReponse, SnapshotExtractionList, SnapshotExtractionListItem
+from .streams import StreamingInstance, StreamingQuery, StreamingSubscription, StreamingInstanceList, StreamingInstanceListItem
 # from .tools import JSONLFileHandler, BigQueryHandler, MongoDBHandler
 
 version = __version__
