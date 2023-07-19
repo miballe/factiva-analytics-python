@@ -7,6 +7,7 @@ from datetime import datetime
 import requests
 from . import tools
 from . import const
+from . import config
 from ...analytics import __version__
 from .log import factiva_logger, get_factiva_logger
 
@@ -73,11 +74,11 @@ def api_send_request(method:str='GET',
     if 'user-key' in headers:
         vsum = tools.md5hash(headers['user-key'])
 
-    headers.update({
-        'User-Agent': f'RDL-Python-{__version__}-{vsum}'
-    })
-
-    __log.debug(f"{method} Request with User-Agent {headers['User-Agent']}")
+    if config.USERAGENT:
+        headers.update({
+            'User-Agent': f'RDL-Python-{__version__}-{vsum}'
+        })
+        __log.debug(f"{method} Request with User-Agent {headers['User-Agent']}")
 
     try:
         if method == 'GET':
@@ -146,9 +147,10 @@ def download_file(file_url:str,
     if 'user-key' in headers:
         vsum = tools.md5hash(headers['user-key'])
 
-    headers.update({
-        'User-Agent': f'RDL-Python-{__version__}-{vsum}'
-    })
+    if config.USERAGENT:
+        headers.update({
+            'User-Agent': f'RDL-Python-{__version__}-{vsum}'
+        })
 
     response = _send_get_request(endpoint_url=file_url,
                                 headers=headers,

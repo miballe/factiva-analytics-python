@@ -7,6 +7,7 @@ from .base import SnapshotBase, SnapshotBaseQuery, SnapshotBaseJobResponse
 from ..common import log, const, req, tools
 from ..auth import UserKey
 from pathlib import Path
+import pandas as pd
 
 
 class SnapshotExtractionJobReponse(SnapshotBaseJobResponse):
@@ -459,3 +460,71 @@ class SnapshotExtraction(SnapshotBase):
         ret_val = super().__str__(detailed, prefix, root_prefix)
         ret_val = ret_val.replace('├─job_response', '└─job_response')
         return ret_val
+
+
+class SnapshotExtractionListItem():
+    
+    id: str = None
+    short_id: str = None
+    job_status: str = None
+    format: str = None
+
+    def __init__(self, id:str=None,
+                 short_id:str=None,
+                 current_state:str=None,
+                 format:str=None) -> None:
+        self.id = id
+        self.short_id = short_id
+        self.job_status = current_state
+        self.format = format
+
+
+    def __repr__(self):
+        return self.__str__()
+
+
+    def __str__(self, prefix='  ├─', root_prefix='', row=True, index=None):
+        if row:
+            if index is not None:
+                prefix = f"{prefix}[{index:<3}] "
+            ret_val = f"{prefix}{self.short_id:<12} {self.job_status:<16} {self.format:<8}\n"
+        else:
+            ret_val = f"{root_prefix}<'factiva.analytics.{str(self.__class__).split('.')[-1]}\n"
+            ret_val += f"{prefix}short_id: {self.short_id}\n"
+            ret_val += f"{prefix}current_state: {self.job_status}\n"
+            ret_val += f"{prefix}format: {self.format}"
+        return ret_val
+
+
+class SnapshotExtractionList():
+
+    items: list[SnapshotExtractionListItem] = None
+
+
+    def __init__(self, df_extractions: pd.DataFrame = None) -> None:
+        self.items = []
+        if df_extractions is not None:
+            for index, row in df_extractions.iterrows():
+                self.items.append(SnapshotExtractionListItem(
+                    short_id=row['short_id'],
+                    current_state=row['current_state'],
+                    format=row['format']
+                ))
+
+
+    def __getitem__(self, index):
+        return SnapshotExtraction(self.items[index].short_id)
+
+
+    def __repr__(self):
+        return self.__str__()
+
+
+    def __str__(self, prefix='  ├─'):
+        ret_val = f"<'factiva.analytics.{str(self.__class__).split('.')[-1]}\n"
+        ret_val += f"{prefix}     {'short_id':<12} {'job_status':<16} {'format':<8}\n"
+        for ix, item in enumerate(self.items):
+            ret_val += item.__str__(row=True, index=ix)
+        return ret_val
+    
+
